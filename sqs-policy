@@ -1,0 +1,49 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "elasticloadbalancing:Describe*",
+        "ec2:DescribeInstances"
+      ],
+      "Resource": ["*"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:PutItem"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:*:*:table/analytics-store"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+       "s3:*",
+        "sqs:SendMessage"
+      ],
+      "Resource": ["arn:aws:sqs:*:*:input-queue"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["sns:ListTopics",
+        "sns:Publish",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:PurgeQueue",
+        "sqs:ReceiveMessage",
+        "sqs:SetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ListQueues",
+        "sqs:SendMessage",
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+      ],
+      "Resource": ["*"]
+    }
+    ]
+}

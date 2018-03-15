@@ -1,0 +1,331 @@
+composition
+
+import Fugue.AWS as AWS
+import Fugue.AWS.AutoScaling as AutoScaling
+import Fugue.AWS.EC2 as EC2
+import Fugue.AWS.IAM as IAM
+import Fugue.AWS.RDS as RDS
+
+############################################################
+# Region
+#   From local AWS setting: ca-central-1
+############################################################
+region: AWS.Ca-central-1
+
+
+############################################################
+# DHCP Options
+#   Generated from AWS resource: dopt-323fc55b
+############################################################
+ec2-dhcpoptions-1: EC2.DhcpOptions.new {
+  domainName: "ca-central-1.compute.internal",
+  domainNameServers: [
+    "AmazonProvidedDNS",
+  ],
+  region: region,
+}
+
+
+############################################################
+# VPC
+#   Generated from AWS resource: vpc-ca649fa3
+############################################################
+ec2-vpc-1: EC2.Vpc.new {
+  cidrBlock: "172.31.0.0/16",
+  dhcpOptions: ec2-dhcpoptions-1,
+  enableDnsHostnames: True,
+  enableDnsSupport: True,
+  instanceTenancy: EC2.DefaultTenancy,
+  region: region,
+}
+
+
+############################################################
+# Subnet
+#   Generated from AWS resource: subnet-72b8791b
+############################################################
+ec2-subnet-1: EC2.Subnet.new {
+  availabilityZone: AWS.A,
+  cidrBlock: "172.31.16.0/20",
+  defaultForAz: True,
+  mapPublicIpOnLaunch: True,
+  vpc: ec2-vpc-1,
+}
+
+
+############################################################
+# Subnet
+#   Generated from AWS resource: subnet-a349add8
+############################################################
+ec2-subnet-2: EC2.Subnet.new {
+  availabilityZone: AWS.B,
+  cidrBlock: "172.31.0.0/20",
+  defaultForAz: True,
+  mapPublicIpOnLaunch: True,
+  vpc: ec2-vpc-1,
+}
+
+
+############################################################
+# Security Group
+#   Generated from AWS resource: sg-0118d068
+############################################################
+ec2-securitygroup-1: EC2.SecurityGroup.new {
+  description: "default VPC security group",
+  ipPermissions: [
+    EC2.IpPermission.new {
+      fromPort: 0,
+      ipProtocol: "-1",
+      target: EC2.IpPermission.Target.securityGroups([
+                  ec2-securitygroup-1,
+        ]),
+      toPort: 0,
+    },
+  ],
+  ipPermissionsEgress: [
+    EC2.IpPermission.new {
+      fromPort: 0,
+      ipProtocol: "-1",
+      target: EC2.IpPermission.Target.all,
+      toPort: 0,
+    },
+  ],
+  vpc: ec2-vpc-1,
+}
+
+
+############################################################
+# Security Group
+#   Generated from AWS resource: sg-6701ff0f
+############################################################
+ec2-securitygroup-2: EC2.SecurityGroup.new {
+  description: "Open database for access",
+  ipPermissions: [
+    EC2.IpPermission.new {
+      fromPort: 3306,
+      ipProtocol: "tcp",
+      target: EC2.IpPermission.Target.securityGroups([
+                  ec2-securitygroup-3,
+        ]),
+      toPort: 3306,
+    },
+  ],
+  ipPermissionsEgress: [
+    EC2.IpPermission.new {
+      fromPort: 0,
+      ipProtocol: "-1",
+      target: EC2.IpPermission.Target.all,
+      toPort: 0,
+    },
+  ],
+  tags: [
+    AWS.tag("aws:cloudformation:logical-id", "DBEC2SecurityGroup"),
+    AWS.tag("application", "training-test"),
+    AWS.tag("aws:cloudformation:stack-id", "arn:aws:cloudformation:ca-central-1:065965358249:stack/WordPress-sample-scalable/746967d0-b9ba-11e7-83d7-504dce355a4a"),
+    AWS.tag("aws:cloudformation:stack-name", "WordPress-sample-scalable"),
+  ],
+  vpc: ec2-vpc-1,
+}
+
+
+############################################################
+# Security Group
+#   Generated from AWS resource: sg-c600feae
+############################################################
+ec2-securitygroup-3: EC2.SecurityGroup.new {
+  description: "Enable HTTP access via port 80 locked down to the load balancer + SSH access",
+  ipPermissions: [
+    EC2.IpPermission.new {
+      fromPort: 80,
+      ipProtocol: "tcp",
+      target: EC2.IpPermission.Target.securityGroups([
+                  ec2-securitygroup-1,
+        ]),
+      toPort: 80,
+    },
+    EC2.IpPermission.new {
+      fromPort: 22,
+      ipProtocol: "tcp",
+      target: EC2.IpPermission.Target.all,
+      toPort: 22,
+    },
+  ],
+  ipPermissionsEgress: [
+    EC2.IpPermission.new {
+      fromPort: 0,
+      ipProtocol: "-1",
+      target: EC2.IpPermission.Target.all,
+      toPort: 0,
+    },
+  ],
+  tags: [
+    AWS.tag("aws:cloudformation:stack-id", "arn:aws:cloudformation:ca-central-1:065965358249:stack/WordPress-sample-scalable/746967d0-b9ba-11e7-83d7-504dce355a4a"),
+    AWS.tag("aws:cloudformation:stack-name", "WordPress-sample-scalable"),
+    AWS.tag("application", "training-test"),
+    AWS.tag("aws:cloudformation:logical-id", "WebServerSecurityGroup"),
+  ],
+  vpc: ec2-vpc-1,
+}
+
+
+############################################################
+# Route Table
+#   Generated from AWS resource: rtb-c09257a9
+############################################################
+ec2-routetable-1: EC2.RouteTable.new {
+  routes: [
+    EC2.Route.new {
+      destinationCidrBlock: "0.0.0.0/0",
+      target: EC2.GatewayTarget(      ec2-internetgateway-1),
+    },
+  ],
+  vpc: ec2-vpc-1,
+}
+
+
+############################################################
+# InternetGateway
+#   Generated from AWS resource: igw-cac13ca3
+############################################################
+ec2-internetgateway-1: EC2.InternetGateway.new {
+  region: region,
+  vpc: ec2-vpc-1,
+}
+
+
+############################################################
+# NetworkInterface
+#   Generated from AWS resource: eni-06ae4859
+############################################################
+ec2-networkinterface-1: EC2.NetworkInterface.new {
+  description: "RDSNetworkInterface",
+  privateIpAddress: "172.31.20.83",
+  securityGroups: [
+      ec2-securitygroup-2,
+  ],
+  sourceDestCheck: True,
+  subnet: ec2-subnet-1,
+}
+
+
+############################################################
+# NetworkInterface
+#   Generated from AWS resource: eni-46aa4c19
+############################################################
+ec2-networkinterface-2: EC2.NetworkInterface.new {
+  description: "ELB app/WordP-Appli-1EN35XP6KVSS7/06888902a52e305e",
+  privateIpAddress: "172.31.22.189",
+  securityGroups: [
+      ec2-securitygroup-1,
+  ],
+  sourceDestCheck: True,
+  subnet: ec2-subnet-1,
+}
+
+
+############################################################
+# NetworkInterface
+#   Generated from AWS resource: eni-ddcbdc8f
+############################################################
+ec2-networkinterface-3: EC2.NetworkInterface.new {
+  description: "ELB app/WordP-Appli-1EN35XP6KVSS7/06888902a52e305e",
+  privateIpAddress: "172.31.9.41",
+  securityGroups: [
+      ec2-securitygroup-1,
+  ],
+  sourceDestCheck: True,
+  subnet: ec2-subnet-2,
+}
+
+
+############################################################
+# Launch Configuration
+#   Generated from AWS resource: WordPress-sample-scalable-LaunchConfig-1ORUVI4HF2ZGH
+############################################################
+autoscaling-launchconfiguration-1: AutoScaling.LaunchConfiguration.new {
+  ebsOptimized: False,
+  image: "ami-730ebd17",
+  instanceMonitoring: True,
+  instanceType: EC2.T2_small,
+  keyName: "training",
+  name: "WordPress-sample-scalable-LaunchConfig-1ORUVI4HF2ZGH",
+  securityGroups: [
+      ec2-securitygroup-3,
+  ],
+  userData: "IyEvYmluL2Jhc2ggLXhlCnl1bSB1cGRhdGUgLXkgYXdzLWNmbi1ib290c3RyYXAKL29wdC9hd3MvYmluL2Nmbi1pbml0IC12ICAgICAgICAgIC0tc3RhY2sgV29yZFByZXNzLXNhbXBsZS1zY2FsYWJsZSAgICAgICAgIC0tcmVzb3VyY2UgTGF1bmNoQ29uZmlnICAgICAgICAgIC0tY29uZmlnc2V0cyB3b3JkcHJlc3NfaW5zdGFsbCAgICAgICAgICAtLXJlZ2lvbiBjYS1jZW50cmFsLTEKL29wdC9hd3MvYmluL2Nmbi1zaWduYWwgLWUgJD8gICAgICAgICAgLS1zdGFjayBXb3JkUHJlc3Mtc2FtcGxlLXNjYWxhYmxlICAgICAgICAgLS1yZXNvdXJjZSBXZWJTZXJ2ZXJHcm91cCAgICAgICAgICAtLXJlZ2lvbiBjYS1jZW50cmFsLTEK",
+}
+
+
+############################################################
+# AutoScalingGroup
+#   Generated from AWS resource: WordPress-sample-scalable-WebServerGroup-1UNOGF7GFC2TW
+############################################################
+autoscaling-autoscalinggroup-1: AutoScaling.AutoScalingGroup.new {
+  defaultCooldown: 300,
+  healthCheckType: AutoScaling.Ec2,
+  launchConfiguration: autoscaling-launchconfiguration-1,
+  maxSize: 5,
+  minSize: 1,
+  name: "WordPress-sample-scalable-WebServerGroup-1UNOGF7GFC2TW",
+  newInstancesProtectedFromScaleIn: False,
+  subnets: [
+      ec2-subnet-1,
+      ec2-subnet-2,
+  ],
+  tags: [
+    AWS.tag("application", "training-test"),
+    AWS.tag("aws:cloudformation:logical-id", "WebServerGroup"),
+    AWS.tag("aws:cloudformation:stack-id", "arn:aws:cloudformation:ca-central-1:065965358249:stack/WordPress-sample-scalable/746967d0-b9ba-11e7-83d7-504dce355a4a"),
+    AWS.tag("aws:cloudformation:stack-name", "WordPress-sample-scalable"),
+  ],
+  terminationPolicies: [
+    AutoScaling.DefaultTerminationPolicy,
+  ],
+}
+
+
+############################################################
+# IAM Role
+#   Generated from AWS resource: AROAIRDKVESC2AWCJMQT2
+############################################################
+iam-role-1: IAM.Role.new {
+  assumeRolePolicyDocument: '{"Statement": [{"Action": "sts:AssumeRoleWithSAML", "Condition": {"StringEquals": {"SAML:aud": "https://signin.aws.amazon.com/saml"}}, "Effect": "Allow", "Principal": {"Federated": "arn:aws:iam::065965358249:saml-provider/fugue.okta.com"}}], "Version": "2012-10-17"}',
+  managedPolicies: [
+    IAM.ManagedPolicy.external("arn:aws:iam::aws:policy/AdministratorAccess"),
+  ],
+  path: "/",
+  roleName: "oktaAdminRole",
+}
+
+
+############################################################
+# DBInstance
+#   Generated from AWS resource: wd1ab7b0wdwdid9
+############################################################
+rds-dbinstance-1: RDS.DBInstance.new {
+  allocatedStorage: 5,
+  autoMinorVersionUpgrade: True,
+  availabilityZone: AWS.A,
+  backupRetentionPeriod: 1,
+  caCertificateIdentifier: "rds-ca-2015",
+  copyTagsToSnapshot: False,
+  dbInstanceClass: RDS.DB_T2_SMALL,
+  dbInstanceIdentifier: "wd1ab7b0wdwdid9",
+  dbName: "wordpressdb",
+  dbSubnetGroup: RDS.DBSubnetGroup.external("default", region),
+  engine: RDS.MySQL,
+  engineVersion: "5.6.37",
+  masterUsername: "trainee",
+  multiAZ: False,
+  port: 3306,
+  preferredBackupWindow: "11:05-11:35",
+  preferredMaintenanceWindow: "mon:13:26-mon:13:56",
+  publiclyAccessible: True,
+  securityGroups: [
+      ec2-securitygroup-2,
+  ],
+  storageEncrypted: False,
+  storageType: EC2.Standard,
+}
+
+

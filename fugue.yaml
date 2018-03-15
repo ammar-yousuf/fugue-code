@@ -1,0 +1,3 @@
+conductor:
+  ami: ami-1bfa8b61
+  region: us-east-1

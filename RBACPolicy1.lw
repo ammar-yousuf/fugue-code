@@ -1,0 +1,72 @@
+composition
+
+import Fugue.System.Policy as .
+
+default: Account{accountId: 'fugue-CHANGEME'}
+webDev1: Account{accountId: 'web-dev-1-CHANGEME'}
+webDev2: Account{accountId: 'web-dev-2-CHANGEME'}
+webStage: Account{accountId: 'web-stage-CHANGEME'}
+
+kate: User{userId: 'kate'}
+alec: User{userId: 'alec'}
+kenan: User{userId: 'kenan'}
+leslie: User{userId: 'leslie'}
+beck: User{userId: 'beck'}
+sasheer: User{userId: 'sasheer'}
+colin: User{userId: 'colin'}
+cecily: User{userId: 'cecily'}
+
+# Kate can manage the account table and take all actions in all accounts.
+kateAcctTable: accountTableRules {
+  principals: [kate],
+  actions: allAccountTableActions
+}
+
+#Kate can manage all compositions in all accounts
+kateAllAccounts: accountRules {
+  principals: [kate],
+  accounts: [AllAccounts],
+  actions: allAccountActions
+}
+     
+# Alec and Leslie can see what's running and process history in 
+# all accounts, but can't change them.
+readOnlyAccountRules: accountRules {
+  principals: [alec, leslie],
+  accounts: [AllAccounts],
+  actions: [AccountStatusProcess, AccountHistoryProcess]
+}
+
+# Alec manages RBAC administration
+alecRBAC: rbacRules {
+  principals: [alec],
+  actions: allRbacActions
+}
+
+# All users can see whats running in webDev1 & 2
+allUsersStatus: accountRules {
+  principals: [AllUsers],
+  accounts:[webDev1, webDev2],
+  actions: [AccountStatusProcess, AccountHistoryProcess]
+}
+
+#Kenan and Beck can manage compositions in an account bound to the name 'webDev1'
+webDev1rule: accountRules {
+  principals: [kenan, beck],
+  accounts: [webDev1],
+  actions: allAccountActions
+}
+
+#Sasheer and Colin can manage compositions in an account bound to the name 'webDev2'
+webDev2rule: accountRules {
+  principals: [sasheer, colin],
+  accounts: [webDev2],
+  actions: allAccountActions
+}
+
+#Cecily can manage compositions in an account bound to the name 'webStage'
+webStagerule: accountRules {
+  principals: [cecily],
+  accounts: [webStage],
+  actions: allAccountActions
+}

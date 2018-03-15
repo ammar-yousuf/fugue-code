@@ -1,0 +1,191 @@
+composition
+
+import Fugue.AWS as AWS
+import Fugue.AWS.Pattern.Network as Network
+import Fugue.AWS.EC2 as EC2
+import Fugue.AWS.ELB as ELB
+import Fugue.AWS.RDS as RDS
+import Fugue.AWS.AutoScaling as AutoScaling
+import Fugue.AWS.IAM as IAM
+import Fugue.Core.Vars as Vars
+
+# Misc
+refuge-tag: AWS.Tag {
+  key: "Application",
+  value: "Refuge"
+}
+
+refuge-region: AWS.Us-west-2
+refuge-web-app-ami: "ami-e9f85989"
+refuge-api-ami: "ami-09f95869"
+
+# Network
+refuge-network: Network.public {
+  name: "Refuge Network",
+  region: refuge-region,
+  cidr: "10.0.0.0/16",
+  subnets: [
+    (AWS.A, "10.0.1.0/24"),
+    (AWS.B, "10.0.2.0/24"),
+  ]
+}
+
+# ELB Security Group
+refuge-elb-sg: EC2.SecurityGroup.new {
+  description: "Refuge loadbalancer",
+  ipPermissions: [
+    EC2.IpPermission.http(EC2.IpPermission.Target.all),
+    EC2.IpPermission.https(EC2.IpPermission.Target.all),
+  ],
+  tags: [refuge-tag],
+  vpc: refuge-network.vpc
+}
+
+# EC2 Security Group
+refuge-ec2-sg: EC2.SecurityGroup.new {
+  description: "Allow http traffic from the ELB",
+  ipPermissions: [
+    EC2.IpPermission.http(EC2.IpPermission.Target.securityGroup(refuge-elb-sg)),
+  ],
+  tags: [refuge-tag],
+  vpc: refuge-network.vpc
+}
+
+# Web App ELB
+refuge-web-app-elb: ELB.LoadBalancer.new {
+  loadBalancerName: "refuge-web-app",
+  healthCheck: refuge-elb-health-check,
+  subnets: refuge-network.publicSubnets,
+  securityGroups: [refuge-elb-sg],
+  listeners: [refuge-http-listener],
+  tags: [refuge-tag]
+}
+
+# API ELB
+refuge-api-elb: ELB.LoadBalancer.new {
+  loadBalancerName: "refuge-api",
+  healthCheck: refuge-elb-health-check,
+  subnets: refuge-network.publicSubnets,
+  securityGroups: [refuge-elb-sg],
+  listeners: [refuge-http-listener],
+  tags: [refuge-tag]
+}
+
+# ELB health check
+refuge-elb-health-check: ELB.HealthCheck.tcp {
+  interval: 30,
+  timeout: 5,
+  unhealthyThreshold: 3,
+  healthyThreshold: 2,
+  port: 80
+}
+
+# ELB HTTP listener
+refuge-http-listener: ELB.Listener.new {
+  protocol: ELB.HTTP,
+  loadBalancerPort: 80,
+  instancePort: 80
+}
+
+# ASGs
+refuge-web-app-asg: AutoScaling.AutoScalingGroup.new {
+  subnets: refuge-network.publicSubnets,
+  loadBalancers: [refuge-web-app-elb],
+  minSize: 2,
+  maxSize: 2,
+  defaultCooldown: 300,
+  healthCheckType: AutoScaling.Ec2,
+  launchConfiguration: refuge-web-app-lc,
+  tags: [refuge-tag],
+  terminationPolicies: [AutoScaling.ClosestToNextInstanceHour],
+  enabledMetrics: [
+    AutoScaling.GroupInServiceInstances,
+    AutoScaling.GroupTotalInstances
+  ]
+}
+
+refuge-api-asg: AutoScaling.AutoScalingGroup.new {
+  subnets: refuge-network.publicSubnets,
+  loadBalancers: [refuge-api-elb],
+  minSize: 2,
+  maxSize: 2,
+  defaultCooldown: 300,
+  healthCheckType: AutoScaling.Ec2,
+  launchConfiguration: refuge-api-lc,
+  tags: [refuge-tag],
+  terminationPolicies: [AutoScaling.ClosestToNextInstanceHour],
+  enabledMetrics: [
+    AutoScaling.GroupInServiceInstances,
+    AutoScaling.GroupTotalInstances
+  ]
+}
+
+# ASG launch configs
+refuge-web-app-lc: AutoScaling.LaunchConfiguration.new {
+  image: refuge-web-app-ami,
+  securityGroups: [refuge-ec2-sg],
+  instanceType: EC2.T2_micro,
+  associatePublicIpAddress: True,
+  iamInstanceProfile: refuge-ec2-profile,
+}
+
+refuge-api-lc: AutoScaling.LaunchConfiguration.new {
+  image: refuge-api-ami,
+  securityGroups: [refuge-ec2-sg],
+  instanceType: EC2.T2_micro,
+  associatePublicIpAddress: True,
+  iamInstanceProfile: refuge-ec2-profile,
+  userData: "export RDS_USERNAME=admin
+   \export RDS_PASSWORD=!password1
+   \export RDS_DB_NAME=api"
+}
+
+# EC2 instance IAM role
+refuge-role: IAM.Role.new {
+  roleName: 'refuge-role',
+  assumeRolePolicyDocument: IAM.Policy.AssumeRole.ec2,
+  rolePolicies: [refuge-role-policy]
+}
+
+refuge-ec2-profile: IAM.InstanceProfile.new {
+  instanceProfileName: 'refuge-ec2-profile',
+  roles: [refuge-role]
+}
+
+refuge-role-policy: IAM.Policy.new {
+  policyName: 'elb-describe',
+  policyDocument: String.readFileUtf8('policy_EC2.json')
+}
+
+# RDS Security Group
+refuge-rds-sg: EC2.SecurityGroup.new {
+  description: "Allow MySQL traffic from the Internet",
+  ipPermissions: [
+    EC2.IpPermission.mysql(EC2.IpPermission.Target.securityGroup(refuge-ec2-sg))
+  ],
+  tags: [refuge-tag],
+  vpc: refuge-network.vpc
+}
+
+# RDS instance
+refuge-db-subnet-group: RDS.DBSubnetGroup.new {
+  name: "refuge-db",
+  description: "Refuge subnet group",
+  subnets: refuge-network.publicSubnets,
+  tags: [refuge-tag]
+}
+
+refuge-db-instance: RDS.DBInstance.new {
+  dbInstanceIdentifier: "Refuge",
+  dbInstanceClass: RDS.DB_T2_MICRO,
+  engine: RDS.MySQL,
+  masterUsername: "admin",
+  dbName: "api",
+  allocatedStorage: 1000,
+  securityGroups: [refuge-rds-sg],
+  dbSubnetGroup: refuge-db-subnet-group,
+  multiAZ: False,
+  storageType: EC2.Standard,
+  masterUserPassword: Vars.PlainText({password: "!password1"}),
+  tags: [refuge-tag]
+}

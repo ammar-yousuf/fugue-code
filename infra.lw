@@ -1,0 +1,165 @@
+export
+  global-infra
+  getRegionInfra
+  type RegionInfra
+  regions
+
+import Fugue.AWS as AWS
+import Fugue.AWS.Pattern.Network as Network
+import Fugue.AWS.EC2 as EC2
+import Fugue.AWS.AutoScaling as AutoScaling
+import Fugue.AWS.IAM as IAM
+import Fugue.AWS.ELB as ELB
+
+type GlobalInfra:
+  clusterInstanceRole: IAM.Role
+  serviceRole: IAM.Role
+
+type RegionInfra:
+  network: Network.Network
+  sg: EC2.SecurityGroup
+  elb: ELB.LoadBalancer
+  region: AWS.Region
+
+
+fun getRegionInfra(r: AWS.Region) -> RegionInfra:
+
+  let azs: getAZ(r)
+
+  let network: Network.public {
+      name: "test",
+      region: r,
+      cidr: "10.0.0.0/16",
+      subnets: [
+        (List.index(azs,0), "10.0.1.0/24"),
+        (List.index(azs,1), "10.0.2.0/24"),
+      ]
+  }
+
+  let sg: EC2.SecurityGroup.new {
+      vpc: network.vpc,
+      description: "ECS Test Cluster Container Instances",
+      ipPermissions: [
+        EC2.IpPermission.http(EC2.IpPermission.Target.ipRange("38.142.6.178/32")),
+      ],
+  }
+
+  let elb: ELB.LoadBalancer.new {
+      loadBalancerName: "test-web",
+      subnets: network.publicSubnets,
+      healthCheck: ELB.HealthCheck.tcp {
+        port: 55001,
+        interval: 15,
+        timeout: 3,
+        unhealthyThreshold: 3,
+        healthyThreshold: 3,
+      },
+      securityGroups: [
+        sg,
+      ],
+      scheme: ELB.InternetFacing,
+      listeners: [
+        ELB.Listener.new {
+          protocol: ELB.HTTP,
+          loadBalancerPort: 80,
+          instanceProtocol: ELB.HTTP,
+          instancePort: 55001,
+        },
+      ],
+  }
+
+  {
+    network: network,
+    sg: sg,
+    elb: elb,
+    region: r
+  }
+
+
+
+
+
+
+# Set up the global infra
+clusterInstanceRole: IAM.Role.new {
+  roleName: "ecsContainerInstanceRole",
+  assumeRolePolicyDocument: IAM.Policy.AssumeRole.ec2,
+  managedPolicies: [
+    IAM.ManagedPolicy.external("arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"),
+  ],
+}
+
+serviceRole: IAM.Role.new {
+  roleName: "ecsServiceRole",
+  assumeRolePolicyDocument: '{
+\  "Version": "2008-10-17",
+\  "Statement": [
+\    {
+\      "Sid": "",
+\      "Effect": "Allow",
+\      "Principal": {
+\        "Service": "ecs.amazonaws.com"
+\      },
+\      "Action": "sts:AssumeRole"
+\    }
+\  ]
+\}',
+  managedPolicies: [
+    IAM.ManagedPolicy.external("arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"),
+  ]
+}
+
+global-infra: {
+  clusterInstanceRole: clusterInstanceRole,
+  serviceRole: serviceRole,
+}
+
+fun getAZ(r: AWS.Region) -> List<AWS.AvailabilityZone>:
+  case r of
+    | AWS.Us-east-1 -> [AWS.A, AWS.B, AWS.C, AWS.D, AWS.E, AWS.F]
+    | AWS.Ca-central-1 -> [AWS.A, AWS.B]
+    | AWS.Us-east-2 -> [AWS.A, AWS.B, AWS.C]
+    | AWS.Us-west-1 -> [AWS.B, AWS.C]
+    | AWS.Eu-central-1 -> [AWS.A, AWS.B, AWS.C]
+    | AWS.Eu-west-2 -> [AWS.A, AWS.B]
+    | AWS.Sa-east-1 -> [AWS.A, AWS.B, AWS.C]
+    | AWS.Ap-northeast-1 -> [AWS.A, AWS.C]
+    | AWS.Eu-west-1 -> [AWS.A, AWS.B, AWS.C]
+    | AWS.Ap-southeast-2 -> [AWS.A, AWS.B, AWS.C]
+    | AWS.Ap-southeast-1 -> [AWS.A, AWS.B]
+    | AWS.Ap-northeast-2 -> [AWS.A, AWS.C]
+    | AWS.Ap-south-1 -> [AWS.A, AWS.B]
+    | AWS.Us-west-2 -> [AWS.A, AWS.B, AWS.C]
+    | _ -> error("No mapping specified for given region")
+
+# A mapping of the AMI to use in every region. These are just the default Linux AMI
+fun getAMI(r: AWS.Region) -> String:
+    case r of
+    | AWS.Us-east-1 -> "ami-c58c1dd3"
+    | AWS.Us-east-2 -> "ami-4191b524"
+    | AWS.Us-west-1 -> "ami-7a85a01a"
+    | AWS.Us-west-2 -> "ami-4836a428"
+    | AWS.Ca-central-1 -> "ami-0bd66a6f"
+    | AWS.Eu-west-1 -> "ami-01ccc867"
+    | AWS.Eu-west-2 -> "ami-b6daced2"
+    | AWS.Eu-central-1 -> "ami-b968bad6"
+    | AWS.Ap-south-1 -> "ami-52c7b43d"
+    | AWS.Ap-southeast-1 -> "ami-fc5ae39f"
+    | AWS.Ap-southeast-2 -> "ami-162c2575"
+    | AWS.Ap-northeast-1 -> "ami-923d12f5"
+    | AWS.Ap-northeast-2 -> "ami-9d15c7f3"
+    | AWS.Sa-east-1 -> "ami-37cfad5b"
+    | _ -> error("No ami specified for given region")
+
+regions: [
+  AWS.Us-east-1,
+  AWS.Us-east-2,
+  AWS.Us-west-1,
+  AWS.Us-west-2,
+  AWS.Ca-central-1,
+  AWS.Eu-central-1,
+  AWS.Eu-west-1,
+  AWS.Eu-west-2,
+  AWS.Ap-northeast-1,
+  AWS.Ap-southeast-1,
+  AWS.Ap-southeast-2]

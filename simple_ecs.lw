@@ -1,0 +1,52 @@
+composition
+
+import Fugue.AWS as AWS
+import Fugue.AWS.ECS as ECS
+
+import Infra as Infra
+
+# load the infra
+region-infra: [Infra.getRegionInfra(region) for region in Infra.regions]
+global-infra: Infra.global-infra
+
+# Create a simple cluster containing no services
+fun createSimpleCluster(r: AWS.Region) -> ECS.Cluster:
+  ECS.Cluster {
+    clusterName: "simple-cluster",
+    region: r
+  }
+
+simple-clusters: [ createSimpleCluster(region) for region in Infra.regions]
+
+# now create a cluster that contains a minimal Service
+fun createMinimalServiceCluster(r: AWS.Region) -> ECS.Service:
+  let cluster: ECS.Cluster.new {
+    name: "minimal-cluster",
+    region: r
+  }
+
+  let container: ECS.ContainerDefinition {
+    name: "nginx",
+    image: "nginx",
+    memory: 300
+  }
+
+  let task-definition: ECS.TaskDefinition {
+    containerDefinitions: [ container ],
+    networkMode: ECS.Null,
+    region: r
+  }
+
+  let deployment-config: ECS.DeploymentConfiguration {
+    maximumPercent: 150,
+    minimumHealthyPercent: 50
+  }
+
+  ECS.Service {
+    serviceName: "minimal-service",
+    cluster: cluster,
+    taskDefinition: task-definition,
+    deploymentConfiguration: deployment-config,
+    numDesired: 1
+  }
+minimal-clusters: [ createMinimalServiceCluster(region) for region in Infra.regions]

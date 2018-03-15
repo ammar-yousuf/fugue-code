@@ -1,0 +1,290 @@
+2018-03-15T09:47:50.03 [ fugue ] DEBUG - -------------------------------Configuration Info-------------------------------
+2018-03-15T09:47:50.03 [ fugue ] DEBUG - Fugue CLI Version: 1.22.7-4790-097f41614e4cd541989c184a7caa735e14a59f96
+2018-03-15T09:47:50.03 [ fugue ] DEBUG - --------------------------------------------------------------------------------
+2018-03-15T09:47:50.03 [ fugue ] DEBUG - parsing args "[]" for init
+2018-03-15T09:47:50.03 [ fugue.screen ] ERROR - Missing required argument: <region>.
+Traceback (most recent call last):
+  File "site-packages/fugue_cli/cli.py", line 162, in parse_args
+  File "site-packages/click/core.py", line 874, in parse_args
+  File "site-packages/click/core.py", line 1390, in handle_parse_result
+  File "site-packages/click/core.py", line 1365, in full_process_value
+click.exceptions.MissingParameter
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "site-packages/fugue_cli/cli.py", line 192, in invoke
+  File "site-packages/click/core.py", line 1058, in invoke
+  File "site-packages/click/core.py", line 620, in make_context
+  File "site-packages/fugue_cli/cli.py", line 164, in parse_args
+fugue_cli.exceptions.FugueUsageError: Missing required argument: <region>.
+2018-03-15T09:48:00.03 [ fugue ] DEBUG - -------------------------------Configuration Info-------------------------------
+2018-03-15T09:48:00.03 [ fugue ] DEBUG - Fugue CLI Version: 1.22.7-4790-097f41614e4cd541989c184a7caa735e14a59f96
+2018-03-15T09:48:00.03 [ fugue ] DEBUG - --------------------------------------------------------------------------------
+2018-03-15T09:48:00.03 [ fugue ] DEBUG - parsing args "['us-east-1']" for init
+2018-03-15T09:48:00.03 [ fugue ] DEBUG - No profile or userId/userSecret pair detected, using default profile
+2018-03-15T09:48:02.03 [ fugue.screen ] INFO - [ fugue init ] Initializing Fugue project with the following configuration:
+2018-03-15T09:48:02.03 [ fugue.screen ] INFO - Fugue Conductor AMI ID: ami-1bfa8b61.
+2018-03-15T09:48:02.03 [ fugue.screen ] INFO - AWS Credentials: Profile (default)
+2018-03-15T09:48:02.03 [ fugue.screen ] INFO - Region: us-east-1
+2018-03-15T09:48:02.03 [ fugue.screen ] INFO - Validating Fugue Conductor AMI ID ...
+2018-03-15T09:48:02.03 [ fugue.screen ] INFO - [ OK ] Provided AMI ID is valid.
+2018-03-15T09:48:02.03 [ fugue.screen ] INFO - Creating new fugue.yaml file ...
+2018-03-15T09:48:02.03 [ fugue.screen ] INFO - [ Done ] Project initialized.
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - -------------------------------Configuration Info-------------------------------
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - Fugue CLI Version: 1.22.7-4790-097f41614e4cd541989c184a7caa735e14a59f96
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - No profile or userId/userSecret pair detected, using default profile
+2018-03-15T09:48:53.03 [ fugue ] WARNING - No credential files found, skipping
+2018-03-15T09:48:53.03 [ fugue ] WARNING - could not determine AMI: Parameter validation failed:
+Invalid type for parameter Filters[0].Values[0], value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - Configuration File Path (symbolic links followed): /Users/ammaryousuf/fugue-test/example-ci-jenkins/fugue.yaml
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - Conductor Region: us-east-1
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - Compositions Bucket: fugue-473185492822-us-east-1
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - Request Queue: fugue-demarc-requests
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - Response Table: fugue-cli-responses
+2018-03-15T09:48:53.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T09:48:53.03 [ fugue ] INFO - No user info found in any location
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - Fugue User-Id: n/a
+2018-03-15T09:48:53.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - Fugue Profile: default-473185492822-us-east-1
+2018-03-15T09:48:53.03 [ fugue ] WARNING - No credential files found, skipping
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - Fugue Credentials file: /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - --------------------------------------------------------------------------------
+2018-03-15T09:48:53.03 [ fugue ] DEBUG - parsing args "[]" for install
+2018-03-15T09:48:54.03 [ fugue ] INFO - deleting bucket policy for fugue-473185492822-us-east-1
+2018-03-15T09:48:54.03 [ fugue ] WARNING - encountered ClientError(http_code: 404, err_code: NoSuchBucket, msg: An error occurred (NoSuchBucket) when calling the DeleteBucketPolicy operation: The specified bucket does not exist)
+2018-03-15T09:48:54.03 [ fugue ] INFO - deleting all items in bucket fugue-large-value-473185492822-us-east-1
+2018-03-15T09:48:54.03 [ fugue ] WARNING - encountered ClientError(http_code: 404, err_code: NoSuchBucket, msg: An error occurred (NoSuchBucket) when calling the ListObjects operation: The specified bucket does not exist)
+2018-03-15T09:48:54.03 [ fugue ] INFO - clearing S3 of all objects in vars-snapshots, status, scheduler, rbac, fugue-upgrader
+2018-03-15T09:48:54.03 [ fugue ] WARNING - encountered ClientError(http_code: 404, err_code: NoSuchBucket, msg: An error occurred (NoSuchBucket) when calling the ListObjects operation: The specified bucket does not exist)
+2018-03-15T09:48:54.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T09:48:54.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T09:48:54.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T09:48:54.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T09:48:54.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T09:48:54.03 [ fugue ] DEBUG - found profile default-473185492822-us-east-1 in /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T09:48:54.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T09:48:54.03 [ fugue ] INFO - Clearing out the user section from the config file
+2018-03-15T09:48:54.03 [ fugue.screen ] INFO - [ fugue install ] Installing Fugue Conductor
+2018-03-15T09:48:54.03 [ fugue.screen ] INFO - Install Details:
+2018-03-15T09:48:54.03 [ fugue.screen ] INFO -    Conductor AMI ID: ami-1bfa8b61
+2018-03-15T09:48:54.03 [ fugue.screen ] INFO -    AWS Account: ammaryousuf/473185492822
+2018-03-15T09:48:54.03 [ fugue.screen ] INFO - Region: us-east-1
+2018-03-15T09:49:03.03 [ fugue.screen ] WARNING - Would you like to proceed with installing?
+2018-03-15T09:49:04.03 [ fugue ] DEBUG - availability zones us-east-1a, us-east-1b, us-east-1c, us-east-1d, us-east-1e, us-east-1f
+2018-03-15T09:49:11.03 [ fugue ] ERROR - stack creation failed with event:
+{
+   "StackName": "fugue",
+   "PhysicalResourceId": "",
+   "Timestamp": "2018-03-15T09:49:08.576000+00:00",
+   "LogicalResourceId": "FugueVpc",
+   "StackId": "arn:aws:cloudformation:us-east-1:473185492822:stack/fugue/18c48f00-2836-11e8-ae25-50a686e4bb82",
+   "ResourceProperties": "{\"InstanceTenancy\":\"default\",\"CidrBlock\":\"10.0.0.0/16\",\"EnableDnsSupport\":\"true\",\"Tags\":[{\"Value\":\"Fugue Conductor VPC\",\"Key\":\"Name\"}],\"EnableDnsHostnames\":\"true\"}",
+   "ResourceStatus": "CREATE_FAILED",
+   "EventId": "FugueVpc-CREATE_FAILED-2018-03-15T09:49:08.576Z",
+   "ResourceType": "AWS::EC2::VPC",
+   "ResourceStatusReason": "The maximum number of VPCs has been reached."
+}
+2018-03-15T09:49:11.03 [ fugue ] DEBUG - exiting failure AWS CloudFormation stack creation failed: AWS::EC2::VPC - The maximum number of VPCs has been reached.
+2018-03-15T09:49:11.03 [ fugue.screen ] ERROR - AWS CloudFormation stack creation failed: AWS::EC2::VPC - The maximum number of VPCs has been reached.
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - -------------------------------Configuration Info-------------------------------
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - Fugue CLI Version: 1.22.7-4790-097f41614e4cd541989c184a7caa735e14a59f96
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - No profile or userId/userSecret pair detected, using default profile
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - Reading /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T10:07:04.03 [ fugue ] WARNING - could not determine AMI: Parameter validation failed:
+Invalid type for parameter Filters[0].Values[0], value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - Configuration File Path (symbolic links followed): /Users/ammaryousuf/fugue-test/example-ci-jenkins/fugue.yaml
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - Conductor Region: us-east-1
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - Compositions Bucket: fugue-473185492822-us-east-1
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - Request Queue: fugue-demarc-requests
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - Response Table: fugue-cli-responses
+2018-03-15T10:07:04.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T10:07:04.03 [ fugue ] INFO - No user info found in any location
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - Fugue User-Id: n/a
+2018-03-15T10:07:04.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - Fugue Profile: default-473185492822-us-east-1
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - Reading /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - Fugue Credentials file: /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - --------------------------------------------------------------------------------
+2018-03-15T10:07:04.03 [ fugue ] DEBUG - parsing args "[]" for install
+2018-03-15T10:07:05.03 [ fugue ] INFO - deleting bucket policy for fugue-473185492822-us-east-1
+2018-03-15T10:07:05.03 [ fugue ] WARNING - encountered ClientError(http_code: 404, err_code: NoSuchBucket, msg: An error occurred (NoSuchBucket) when calling the DeleteBucketPolicy operation: The specified bucket does not exist)
+2018-03-15T10:07:05.03 [ fugue ] INFO - deleting all items in bucket fugue-large-value-473185492822-us-east-1
+2018-03-15T10:07:05.03 [ fugue ] WARNING - encountered ClientError(http_code: 404, err_code: NoSuchBucket, msg: An error occurred (NoSuchBucket) when calling the ListObjects operation: The specified bucket does not exist)
+2018-03-15T10:07:05.03 [ fugue ] INFO - clearing S3 of all objects in fugue-upgrader, scheduler, rbac, status, vars-snapshots
+2018-03-15T10:07:05.03 [ fugue ] WARNING - encountered ClientError(http_code: 404, err_code: NoSuchBucket, msg: An error occurred (NoSuchBucket) when calling the ListObjects operation: The specified bucket does not exist)
+2018-03-15T10:07:05.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T10:07:05.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T10:07:05.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T10:07:05.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T10:07:05.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T10:07:05.03 [ fugue ] DEBUG - found profile default-473185492822-us-east-1 in /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T10:07:05.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T10:07:05.03 [ fugue ] INFO - Clearing out the user section from the config file
+2018-03-15T10:07:05.03 [ fugue.screen ] INFO - [ fugue install ] Installing Fugue Conductor
+2018-03-15T10:07:05.03 [ fugue.screen ] INFO - Install Details:
+2018-03-15T10:07:05.03 [ fugue.screen ] INFO -    Conductor AMI ID: ami-1bfa8b61
+2018-03-15T10:07:05.03 [ fugue.screen ] INFO -    AWS Account: ammaryousuf/473185492822
+2018-03-15T10:07:05.03 [ fugue.screen ] INFO - Region: us-east-1
+2018-03-15T10:07:08.03 [ fugue.screen ] WARNING - Would you like to proceed with installing?
+2018-03-15T10:07:08.03 [ fugue ] DEBUG - availability zones us-east-1a, us-east-1b, us-east-1c, us-east-1d, us-east-1e, us-east-1f
+2018-03-15T10:07:15.03 [ fugue ] ERROR - stack creation failed with event:
+{
+   "ResourceType": "AWS::EC2::VPC",
+   "ResourceStatusReason": "The maximum number of VPCs has been reached.",
+   "StackId": "arn:aws:cloudformation:us-east-1:473185492822:stack/fugue/9efb2960-2838-11e8-89bf-500c28604c4a",
+   "EventId": "FugueVpc-CREATE_FAILED-2018-03-15T10:07:12.603Z",
+   "Timestamp": "2018-03-15T10:07:12.603000+00:00",
+   "LogicalResourceId": "FugueVpc",
+   "PhysicalResourceId": "",
+   "ResourceProperties": "{\"InstanceTenancy\":\"default\",\"CidrBlock\":\"10.0.0.0/16\",\"EnableDnsSupport\":\"true\",\"Tags\":[{\"Value\":\"Fugue Conductor VPC\",\"Key\":\"Name\"}],\"EnableDnsHostnames\":\"true\"}",
+   "StackName": "fugue",
+   "ResourceStatus": "CREATE_FAILED"
+}
+2018-03-15T10:07:15.03 [ fugue ] DEBUG - exiting failure AWS CloudFormation stack creation failed: AWS::EC2::VPC - The maximum number of VPCs has been reached.
+2018-03-15T10:07:15.03 [ fugue.screen ] ERROR - AWS CloudFormation stack creation failed: AWS::EC2::VPC - The maximum number of VPCs has been reached.
+2018-03-15T11:59:32.03 [ fugue ] DEBUG - -------------------------------Configuration Info-------------------------------
+2018-03-15T11:59:32.03 [ fugue ] DEBUG - Fugue CLI Version: 1.22.7-4790-097f41614e4cd541989c184a7caa735e14a59f96
+2018-03-15T11:59:32.03 [ fugue ] DEBUG - No profile or userId/userSecret pair detected, using default profile
+2018-03-15T11:59:32.03 [ fugue ] DEBUG - Reading /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T11:59:37.03 [ fugue ] WARNING - could not determine AMI: Parameter validation failed:
+Invalid type for parameter Filters[0].Values[0], value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2018-03-15T11:59:37.03 [ fugue ] DEBUG - Configuration File Path (symbolic links followed): /Users/ammaryousuf/fugue-test/example-ci-jenkins/fugue.yaml
+2018-03-15T11:59:37.03 [ fugue ] DEBUG - Conductor Region: us-east-1
+2018-03-15T11:59:37.03 [ fugue ] DEBUG - Compositions Bucket: fugue-473185492822-us-east-1
+2018-03-15T11:59:37.03 [ fugue ] DEBUG - Request Queue: fugue-demarc-requests
+2018-03-15T11:59:37.03 [ fugue ] DEBUG - Response Table: fugue-cli-responses
+2018-03-15T11:59:37.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T11:59:37.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T11:59:37.03 [ fugue ] INFO - No user info found in any location
+2018-03-15T11:59:37.03 [ fugue ] DEBUG - Fugue User-Id: n/a
+2018-03-15T11:59:37.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T11:59:37.03 [ fugue ] DEBUG - Fugue Profile: default-473185492822-us-east-1
+2018-03-15T11:59:37.03 [ fugue ] DEBUG - Reading /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T11:59:37.03 [ fugue ] DEBUG - Fugue Credentials file: /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T11:59:37.03 [ fugue ] DEBUG - --------------------------------------------------------------------------------
+2018-03-15T11:59:37.03 [ fugue ] DEBUG - parsing args "[]" for install
+2018-03-15T11:59:38.03 [ fugue ] INFO - deleting bucket policy for fugue-473185492822-us-east-1
+2018-03-15T11:59:38.03 [ fugue ] WARNING - encountered ClientError(http_code: 404, err_code: NoSuchBucket, msg: An error occurred (NoSuchBucket) when calling the DeleteBucketPolicy operation: The specified bucket does not exist)
+2018-03-15T11:59:38.03 [ fugue ] INFO - deleting all items in bucket fugue-large-value-473185492822-us-east-1
+2018-03-15T11:59:38.03 [ fugue ] WARNING - encountered ClientError(http_code: 404, err_code: NoSuchBucket, msg: An error occurred (NoSuchBucket) when calling the ListObjects operation: The specified bucket does not exist)
+2018-03-15T11:59:38.03 [ fugue ] INFO - clearing S3 of all objects in vars-snapshots, scheduler, fugue-upgrader, status, rbac
+2018-03-15T11:59:38.03 [ fugue ] WARNING - encountered ClientError(http_code: 404, err_code: NoSuchBucket, msg: An error occurred (NoSuchBucket) when calling the ListObjects operation: The specified bucket does not exist)
+2018-03-15T11:59:38.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T11:59:38.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T11:59:38.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T11:59:38.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T11:59:38.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T11:59:38.03 [ fugue ] DEBUG - found profile default-473185492822-us-east-1 in /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T11:59:38.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T11:59:38.03 [ fugue ] INFO - Clearing out the user section from the config file
+2018-03-15T11:59:38.03 [ fugue.screen ] INFO - [ fugue install ] Installing Fugue Conductor
+2018-03-15T11:59:38.03 [ fugue.screen ] INFO - Install Details:
+2018-03-15T11:59:38.03 [ fugue.screen ] INFO -    Conductor AMI ID: ami-1bfa8b61
+2018-03-15T11:59:38.03 [ fugue.screen ] INFO -    AWS Account: ammaryousuf/473185492822
+2018-03-15T11:59:38.03 [ fugue.screen ] INFO - Region: us-east-1
+2018-03-15T12:00:51.03 [ fugue.screen ] WARNING - Would you like to proceed with installing?
+2018-03-15T12:00:52.03 [ fugue ] DEBUG - availability zones us-east-1a, us-east-1b, us-east-1c, us-east-1d, us-east-1e, us-east-1f
+2018-03-15T12:04:22.03 [ fugue ] INFO - checking for bucket fugue-473185492822-us-east-1 in us-east-1
+2018-03-15T12:04:22.03 [ fugue ] INFO - creating bucket fugue-473185492822-us-east-1 in us-east-1
+2018-03-15T12:04:23.03 [ fugue ] INFO - ensuring kms alias alias/fugue/rbac/secrets
+2018-03-15T12:04:23.03 [ fugue ] INFO - created master key 'alias/fugue/rbac/secrets', id: dd796aba-91c2-4738-b435-0cde609b8149
+2018-03-15T12:04:23.03 [ fugue ] INFO - ensuring user root
+2018-03-15T12:04:24.03 [ fugue ] INFO - created user 'root'
+2018-03-15T12:04:24.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T12:04:24.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T12:04:24.03 [ fugue ] DEBUG - found profile default-473185492822-us-east-1 in /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:04:24.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T12:04:24.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T12:04:24.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T12:04:24.03 [ fugue ] DEBUG - found profile default-473185492822-us-east-1 in /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:04:24.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T12:04:24.03 [ fugue.screen ] INFO - Creating default user credentials ...
+2018-03-15T12:04:24.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T12:04:24.03 [ fugue.screen ] INFO - ====================
+2018-03-15T12:04:24.03 [ fugue.screen ] INFO - User Credential Details:
+2018-03-15T12:04:24.03 [ fugue.screen ] INFO - [default-473185492822-us-east-1]
+2018-03-15T12:04:24.03 [ fugue.screen ] INFO - user = root
+2018-03-15T12:04:24.03 [ fugue ] INFO - ******************************************************
+2018-03-15T12:04:24.03 [ fugue.screen ] INFO - ====================
+2018-03-15T12:04:24.03 [ fugue.screen ] INFO - [ OK ] Fugue Conductor installed.
+2018-03-15T12:04:24.03 [ fugue.screen ] INFO - Fugue IAM Role Details:
+2018-03-15T12:04:24.03 [ fugue.screen ] INFO -    Installer: fugue-installer-us-east-1
+2018-03-15T12:04:24.03 [ fugue.screen ] INFO - User: fugue-user-us-east-1
+2018-03-15T12:04:24.03 [ fugue.screen ] INFO - Booting the Conductor, please wait as this may take between 5-15 minutes...
+2018-03-15T12:04:24.03 [ fugue.screen ] INFO - [ HELP ] The Conductor needs to boot before it can accept commands from the CLI. Exiting the install command while in progress (CTRL+C) will only stop progress tracking and *not* the install itself or the booting process.
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - -------------------------------Configuration Info-------------------------------
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - Fugue CLI Version: 1.22.7-4790-097f41614e4cd541989c184a7caa735e14a59f96
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - No profile or userId/userSecret pair detected, using default profile
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - Reading /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - Configuration File Path (symbolic links followed): /Users/ammaryousuf/fugue-test/example-ci-jenkins/fugue.yaml
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - Conductor Region: us-east-1
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - Compositions Bucket: fugue-473185492822-us-east-1
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - Request Queue: fugue-demarc-requests
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - Response Table: fugue-cli-responses
+2018-03-15T12:12:24.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - found profile default-473185492822-us-east-1 in /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:12:24.03 [ fugue ] INFO - retrieved user from creds file: /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - Fugue User-Id: root
+2018-03-15T12:12:24.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - Fugue Profile: default-473185492822-us-east-1
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - Reading /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - Fugue Credentials file: /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - --------------------------------------------------------------------------------
+2018-03-15T12:12:24.03 [ fugue ] DEBUG - parsing args "[]" for status
+2018-03-15T12:12:24.03 [ fugue.screen ] ERROR - There was a problem executing this command.
+  Reason: The Conductor is in the process of installing.
+Traceback (most recent call last):
+  File "site-packages/fugue_cli/cli.py", line 192, in invoke
+  File "site-packages/click/core.py", line 1060, in invoke
+  File "site-packages/click/core.py", line 889, in invoke
+  File "site-packages/click/core.py", line 534, in invoke
+  File "site-packages/click/decorators.py", line 17, in new_func
+  File "site-packages/fugue_cli/commands/status.py", line 379, in status
+  File "site-packages/fugue_cli/commands/status.py", line 67, in invoke
+  File "site-packages/fugue_cli/service.py", line 38, in list
+  File "site-packages/fugue_cli/session.py", line 247, in processes
+  File "site-packages/fugue_cli/session.py", line 409, in _send_request
+  File "site-packages/fugue_cli/session.py", line 463, in _ensure_conductor_ready
+  File "site-packages/fugue_cli/utils.py", line 123, in ensure_conductor_ready
+  File "site-packages/fugue_cli/utils.py", line 106, in ensure_conductor_ready
+fugue_cli.exceptions.CommandError: There was a problem executing this command.
+  Reason: The Conductor is in the process of installing.
+2018-03-15T12:31:31.03 [ fugue ] DEBUG - -------------------------------Configuration Info-------------------------------
+2018-03-15T12:31:31.03 [ fugue ] DEBUG - Fugue CLI Version: 1.22.7-4790-097f41614e4cd541989c184a7caa735e14a59f96
+2018-03-15T12:31:31.03 [ fugue ] DEBUG - No profile or userId/userSecret pair detected, using default profile
+2018-03-15T12:31:31.03 [ fugue ] DEBUG - Reading /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Conductor AMI: ami-1bfa8b61
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Configuration File Path (symbolic links followed): /Users/ammaryousuf/fugue-test/example-ci-jenkins/fugue.yaml
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Conductor Region: us-east-1
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Compositions Bucket: fugue-473185492822-us-east-1
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Request Queue: fugue-demarc-requests
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Response Table: fugue-cli-responses
+2018-03-15T12:31:32.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - found profile default-473185492822-us-east-1 in /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:31:32.03 [ fugue ] INFO - retrieved user from creds file: /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Fugue User-Id: root
+2018-03-15T12:31:32.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Fugue Profile: default-473185492822-us-east-1
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Reading /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Fugue Credentials file: /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - --------------------------------------------------------------------------------
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - parsing args "[]" for status
+2018-03-15T12:31:32.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - found profile default-473185492822-us-east-1 in /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:31:32.03 [ fugue ] INFO - retrieved user from creds file: /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:31:32.03 [ fugue ] INFO - using default profile default-473185492822-us-east-1
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - Loading profile 'default-473185492822-us-east-1'
+2018-03-15T12:31:32.03 [ fugue ] DEBUG - found profile default-473185492822-us-east-1 in /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:31:32.03 [ fugue ] INFO - retrieved secret from creds file: /Users/ammaryousuf/fugue-test/example-ci-jenkins/credentials
+2018-03-15T12:31:32.03 [ demarccore.endpoints ] INFO - SQS Message Sent: ed4295ad-cb2a-4a9a-b744-e595d70c51a8
+2018-03-15T12:31:34.03 [ demarccore.endpoints ] INFO - SQS Message Sent: 475e1e4f-3efa-405a-9adb-a8298c3db485
+2018-03-15T12:31:35.03 [ fugue.screen ] INFO - Fugue Status Report for ammaryousuf/473185492822 - Thu Mar 15 2018 8:31am
+2018-03-15T12:31:35.03 [ fugue.screen ] INFO - State    Updated    Created    Account    FID    Alias    Flags    Last Message    Next Command
+-------  ---------  ---------  ---------  -----  -------  -------  --------------  --------------
+2018-03-15T12:31:35.03 [ fugue.screen ] INFO - Nothing to see here. Go create something! :-)

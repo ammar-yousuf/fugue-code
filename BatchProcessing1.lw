@@ -1,0 +1,332 @@
+composition
+
+import Fugue.AWS as AWS
+import Fugue.AWS.Pattern.Network as Network
+import Fugue.AWS.EC2 as EC2
+import Fugue.AWS.AutoScaling as AutoScaling
+import Fugue.AWS.SQS as SQS
+import Fugue.AWS.DynamoDB as DynamoDB
+import Fugue.AWS.S3 as S3
+import Fugue.AWS.IAM as IAM
+import Fugue.AWS.ELB as ELB
+import Fugue.Core.Vars as Vars
+import Ludwig.Bytes as Bytes
+
+# Tag
+batch-tag: AWS.Tag {
+  key: "Application",
+  value: "Batch-Job"
+}
+
+# Network resources
+
+batch-net: Network.new {
+  name: "my-batch-network-1",
+  region: AWS.Us-west-2,
+  cidr: "10.0.0.0/16",
+  publicSubnets: [
+    (AWS.A, "10.0.1.0/24"),
+    (AWS.B, "10.0.2.0/24"),
+  ],
+  privateSubnets: [
+    (AWS.A, "10.0.3.0/24"),
+    (AWS.B, "10.0.4.0/24"),
+  ],
+  enableNat: False
+}
+
+# The Job Manager is supposed to move data to --> S3 (raw), SQS Input, and DynamoDB
+# Job Manager ASG
+
+job-manager-asg: AutoScaling.AutoScalingGroup.new {
+    name: "job-asg-1",
+    subnets: batch-net.publicSubnets,
+    loadBalancers: [job-manager-elb],
+    minSize: 4,
+    maxSize: 4,
+    defaultCooldown: 300,
+    launchConfiguration: job-manager-lc,
+    healthCheckType: AutoScaling.Ec2,
+    tags: [batch-tag],
+    terminationPolicies: [AutoScaling.ClosestToNextInstanceHour],
+    enabledMetrics: [
+      AutoScaling.GroupInServiceInstances,
+      AutoScaling.GroupTotalInstances
+    ]
+}
+
+# Job Manager launch config
+
+job-manager-lc: AutoScaling.LaunchConfiguration.new {
+    image: "ami-b7b366d7",
+    securityGroups: [job-manager-sg],
+    instanceType: EC2.T2_micro,
+    associatePublicIpAddress: True,
+    iamInstanceProfile: job-manager-instance-profile,
+    userData: "#! /bin/bash
+  \export SQS_QUEUE=inputQueue"
+}
+
+jm-app-role: IAM.Role.new {
+  roleName: 'jm-app-role',
+  assumeRolePolicyDocument: IAM.Policy.AssumeRole.ec2,
+  rolePolicies: [jm-app-role-policy, input-sender-policy]
+}
+
+job-manager-instance-profile: IAM.InstanceProfile.new {
+  instanceProfileName: 'job-manager-instance-profile',
+  roles: [jm-app-role]
+}
+
+jm-app-role-policy: IAM.Policy.new {
+  policyName: 'ddb-full',
+  policyDocument: ddb-policy-document
+}
+
+input-sender-policy: IAM.Policy.new {
+  policyName: 'input-policy',
+  policyDocument: sqs-policy-document
+}
+
+
+# Job Manager ELB
+job-manager-elb: ELB.LoadBalancer.new {
+  loadBalancerName: "job-manager-load-balancer-1",
+  healthCheck: jm-health-check,
+  subnets: batch-net.publicSubnets,
+  securityGroups: [job-manager-sg],
+  listeners: [job-manager-listener],
+  tags: [batch-tag]
+}
+
+# Job Manager health check
+jm-health-check: ELB.HealthCheck.tcp {
+  interval: 30,
+  timeout: 5,
+  unhealthyThreshold: 3,
+  healthyThreshold: 2,
+  port: 80
+}
+
+# Job Manager listener
+job-manager-listener: ELB.Listener.new {
+  protocol: ELB.HTTP,
+  loadBalancerPort: 2650,
+  instancePort: 80
+}
+
+job-manager-sg: EC2.SecurityGroup.new {
+  description: "Allow http/s traffic from the Internet",
+  ipPermissions: [
+    EC2.IpPermission.http(EC2.IpPermission.Target.all),
+    EC2.IpPermission.https(EC2.IpPermission.Target.all),
+  ],
+  vpc: batch-net.vpc
+} 
+
+
+# S3 Raw Job Data Store
+
+
+
+
+
+
+
+# S3 Interim Results from ASG Worker Nodes
+
+
+
+
+
+
+
+# SQS Input and Output Queues
+#inputQueue is getting data from Job Manager instance and delivering to ASG worker nodes
+#outputQueue is getting data from ASG worker nodes
+
+
+
+
+
+
+
+
+
+outputQueue: SQS.Queue.new {
+  name: "output-queue-1",
+  region: AWS.Us-west-2,
+}
+
+# DynamoDB for ASG worker node output, analytics store
+
+jm-ddb-table-name: DynamoDB.Table.new {
+  name: "analytics-store-batch-1",
+  region: AWS.Us-west-2,
+  attributes: {
+    "id": DynamoDB.S
+  },
+  schema: {
+    "id": DynamoDB.HASH
+  },
+  provisionedThroughput: {
+    read: 10,
+    write: 10,
+  }
+}
+
+# The Worker Nodes are supposed to give and receive from S3 (interim), go to --> DynamoDB, and go --> SQS (output)
+
+#  ASG Worker Nodes
+
+worker-node-asg: AutoScaling.AutoScalingGroup.new {
+    name: "batch-asg-1",
+    subnets: batch-net.publicSubnets,
+    loadBalancers: [worker-node-elb],
+    minSize: 4,
+    maxSize: 4,
+    defaultCooldown: 300,
+    launchConfiguration: worker-node-lc, 
+    healthCheckType: AutoScaling.Ec2,
+    tags: [batch-tag],
+    terminationPolicies: [AutoScaling.ClosestToNextInstanceHour],
+    enabledMetrics: [
+      AutoScaling.GroupInServiceInstances,
+      AutoScaling.GroupTotalInstances
+    ]
+}
+
+# Worker Node Launch Config
+
+worker-node-lc: AutoScaling.LaunchConfiguration.new {
+    image: "ami-b7b366d7",
+    securityGroups: [worker-node-sg],
+    instanceType: EC2.T2_micro,
+    associatePublicIpAddress: False,
+    iamInstanceProfile: wn-instance-profile,
+    userData: "#! /bin/bash
+  \export SQS_QUEUE=inputQueue"
+}
+
+# Worker Node IAM
+
+wn-app-role: IAM.Role.new {
+  roleName: 'wn-app-role',
+  assumeRolePolicyDocument: IAM.Policy.AssumeRole.ec2,
+  rolePolicies: [wn-role-policy]
+}
+
+wn-instance-profile: IAM.InstanceProfile.new {
+  instanceProfileName: 'wn-instance-profile',
+  roles: [wn-app-role]
+}
+
+wn-role-policy: IAM.Policy.new {
+  policyName: 'ddb-full',
+  policyDocument: ddb-policy-document
+}
+
+# Worker Node ELB
+worker-node-elb: ELB.LoadBalancer.new {
+  loadBalancerName: "worker-node-load-balancer-1",
+  healthCheck: worker-health-check,
+  subnets: batch-net.publicSubnets,
+  securityGroups: [worker-node-sg],
+  listeners: [worker-node-listener, job-manager-listener, queue-listener],
+# scheme: Optional(worker-scheme)
+  tags: [batch-tag]
+}
+
+queue-listener: ELB.Listener.new {
+  protocol: ELB.HTTP,
+  loadBalancerPort: 2400,
+  instancePort: 8080
+}
+
+# Worker Node health check
+worker-health-check: ELB.HealthCheck.tcp {
+  interval: 30,
+  timeout: 5,
+  unhealthyThreshold: 3,
+  healthyThreshold: 2,
+  port: 80
+}
+
+# Worker Node listener
+worker-node-listener: ELB.Listener.new {
+  protocol: ELB.HTTP,
+  loadBalancerPort: 2525,
+  instancePort: 80
+}
+
+# Worker Node sg
+
+worker-node-sg: EC2.SecurityGroup.new {
+  description: "Allow traffic from Job Manager ASG",
+  vpc: batch-net.vpc
+} 
+
+#IAM policy docs (more info: http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html)
+
+sqs-policy-document:'{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "elasticloadbalancing:Describe*",
+        "ec2:DescribeInstances"
+      ],
+      "Resource": ["*"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:PutItem"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:*:*:table/analytics-store"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+       "s3:*",
+        "sqs:SendMessage"
+      ],
+      "Resource": ["arn:aws:sqs:*:*:input-queue"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["sns:ListTopics",
+        "sns:Publish",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:PurgeQueue",
+        "sqs:ReceiveMessage",
+        "sqs:SetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ListQueues",
+        "sqs:SendMessage",
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+      ],
+      "Resource": ["*"]
+    }
+    ]
+}'
+
+ddb-policy-document: '{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "*",
+            "Resource": "*"
+        }
+    ]
+}'
+
+

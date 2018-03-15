@@ -1,0 +1,41 @@
+composition
+
+import Fugue.AWS as AWS
+import Fugue.AWS.Pattern.Network as Network
+import Fugue.AWS.EC2 as EC2
+
+
+# Convenience values for FugueInk
+fugue-ink-region: AWS.Us-west-2
+fugue-ink-tag: AWS.Tag {key: 'Application', value: 'Fugue Book Fugue Ink'}
+
+# Network resources
+fugue-ink-network: Network.public {
+  name: "Fugue Ink Network",
+  region: fugue-ink-region,
+  cidr: "10.0.0.0/16",
+  subnets: [
+    (AWS.A, "10.0.1.0/24"),
+    (AWS.B, "10.0.2.0/24"),
+  ]
+}
+
+fugue-ink-sg: EC2.SecurityGroup.new {
+  description: "Allow http/s traffic from the Internet.",
+  ipPermissions: [
+    EC2.IpPermission.http(EC2.IpPermission.Target.all),
+    EC2.IpPermission.https(EC2.IpPermission.Target.all),
+  ],
+  tags: [fugue-ink-tag],
+  vpc: fugue-ink-network.vpc
+}
+
+# Compute resources
+fugue-ink-web: EC2.Instance.new {
+  image: "ami-acc50ecc",
+  instanceType: EC2.T2_micro,
+  securityGroups: [fugue-ink-sg],
+  subnet: List.elementAt(0, fugue-ink-network.publicSubnets),
+  monitoring: False,
+  tags: [fugue-ink-tag]
+}
